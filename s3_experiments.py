@@ -51,12 +51,8 @@ if __name__ == '__main__':
         os.makedirs(destination_folder)
 
     inputs = [[content, destination_folder, client] for content in items['Contents'][:36]]
-    # t1 = time()
-    # inputs = [download_file(content, destination_folder, client) for content in items['Contents'][:36]]
-    # t2 = time()
     total_processes = 4
     t1 = time()
-    # print('Starting pool')
     pool = ThreadPool(total_processes)
     results = pool.starmap(download_file, inputs)
     pool.close()
@@ -64,7 +60,3 @@ if __name__ == '__main__':
 
     print("Items downladed: {}".format(len(items['Contents'])))
     print("Elapsed time: {:.3f} s".format((t2 - t1)))
-    # for item in items['Contents']:
-    #     client.download_file(Bucket=sk_bucket_name, Key=item['Key'], Filename='testfile.gz')
-    #     print(item)
-    #     break
