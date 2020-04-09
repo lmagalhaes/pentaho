@@ -10,13 +10,13 @@ from convert_file import ORIGINALS_PATH
 aws_secret_access_key = os.getenv('AWS_SECRET_ACCESS_KEY')
 aws_access_key_id = os.getenv('AWS_ACCESS_KEY_ID')
 region_name = os.getenv('REGION_NAME')
-
+profile_name = os.getenv('AWS_PROFILE_NAME')
 sk_bucket_name = os.getenv('SK_BUCKET_NAME')
 
 session = Session(
     # aws_secret_access_key=aws_secret_access_key,
     # aws_access_key_id=aws_access_key_id,
-    profile_name='ar-prod',
+    profile_name=profile_name,
     region_name=region_name
 )
 
@@ -50,7 +50,7 @@ if __name__ == '__main__':
         print("Creating destination folder: {}".format(destination_folder))
         os.makedirs(destination_folder)
 
-    inputs = [[content, destination_folder, client] for content in items['Contents'][:36]]
+    inputs = [[content, destination_folder, client] for content in items['Contents'][1]]
     total_processes = 4
     t1 = time()
     pool = ThreadPool(total_processes)
