@@ -58,15 +58,18 @@ if __name__ == '__main__':
             os.makedirs(folder)
 
     files = glob(os.path.join(ORIGINALS_PATH, 'configs', '201805', '*.csv.gz'))
-
+    t1 = time()
     for config_file in files:
-        print('Parsing file: {}'.format(config_file))
+        print(f'Parsing file: {config_file}')
         filename = extract_file_name(config_file)
 
         parsed_file_path = os.path.join(PARSED_PATH, filename)
-        t1 = time()
+        p1 = time()
         with gzip.GzipFile(parsed_file_path, 'w', compresslevel=GZIP_COMPRESSION_LEVEL) as parsed_file:
             parsed_lines = parse_file(config_file)
             parsed_file.writelines(parsed_lines)
-        t2 = time()
-        print("Parse complete in {:.2f}s.".format(t2 - t1))
+        p2 = time()
+        print(f'Parse complete in {p2 - p1:.2f}s.')
+
+    print(f'Total files parsed: {len(files)}')
+    print(f'Elapsed time: {time()-t1:.2f}s')
