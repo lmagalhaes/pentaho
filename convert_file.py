@@ -14,6 +14,7 @@ ZIPPED_PATH = os.path.join(ROOT_DIR, 'zipped')
 PARSED_PATH = os.path.join(ROOT_DIR, 'parsed')
 # for is a good number because it reduces the file size by more than 60% while keeps the compressing time to almost 1/2
 GZIP_COMPRESSION_LEVEL = 4
+NUMBER_OF_WORKERS = os.cpu_count()
 
 
 def is_number(s):
@@ -30,7 +31,7 @@ def extract_file_name(file_path):
 
 def parse_file(filename):
     with gzip.GzipFile(filename, 'r') as file_:
-        return Pool(os.cpu_count()).map(parse_line, file_.readlines())
+        return Pool(processes=NUMBER_OF_WORKERS).map(parse_line, file_.readlines())
 
 
 def parse_line(line):
