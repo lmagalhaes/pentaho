@@ -11,3 +11,6 @@ click = "*"
 
 [requires]
 python_version = "3.8"
+
+[scripts]
+sksnap = "python sksnap.py"
