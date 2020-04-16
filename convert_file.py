@@ -79,13 +79,20 @@ def get_months_to_import(dates, date_format):
     return months_to_import
 
 
-@click.command(name='Process file')
+@click.group('process-cli')
+def process_cli():
+    pass
+
+
+@process_cli.command('process')
 @click.option('--workers', '-w', type=int, default=NUMBER_OF_WORKERS, help=f'Number of works to process file. Defaults: {NUMBER_OF_WORKERS} - total of CPUS on the machine')
 @click.option('--compression-level', '-c', type=int, default=GZIP_COMPRESSION_LEVEL, help=f'Gzip compression level (0-9) defaults: {GZIP_COMPRESSION_LEVEL}')
 @click.option('--dates', default='all', type=str, help='Date to migrate in the "YYYYMM" format. Multiple date separated by "," or range of dates separated by "-"')
 @click.option('--date-format', default=DATE_FORMAT, type=str, help=f'Format in which dates will be input and searched for. Should be compatible with Python datetime format. Default {DATE_FORMAT}. ')
 def process(workers, compression_level, dates, date_format):
-
+    """
+    Process original files downloaded using the upload command.
+    """
     files = []
     months_to_import = get_months_to_import(dates=dates, date_format=date_format)
     for month in months_to_import:
@@ -118,4 +125,4 @@ def process(workers, compression_level, dates, date_format):
 
 
 if __name__ == '__main__':
-    process()
+    process_cli()
