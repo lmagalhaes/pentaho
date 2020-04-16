@@ -4,7 +4,7 @@ from time import time
 
 from boto3 import Session
 
-from convert_file import (
+from process_cli import (
     ORIGINALS_PATH, PARSED_PATH, DATE_FORMAT, extract_file_name, get_months_to_import
 )
 
