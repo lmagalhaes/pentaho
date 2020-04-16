@@ -36,3 +36,29 @@ That is all.
 
 ### How to use
 
+Once everything is installed, you can start toying with the cli.
+
+But, before you start, you have to create a `.env` file, based on the `.env.dist`
+
+```bash
+cp .env{.dist,}  # {.dist,} will replace ".dist" string with ""
+```
+
+and update the values on the `.env` file with actual values
+
+All the variables inside the `.env` file will be automatically loaded by pipenv and expose the variables to the CLI.
+
+Now, just run `pipenv run sksnap` and you should see the CLI help.
+
+```bash
+sksnap [ master ]$ pipenv run sksnap
+Usage: sksnap.py [OPTIONS] COMMAND [ARGS]...
+
+Options:
+  --help  Show this message and exit.
+
+Commands:
+  download  Downloads the original files to be processed.
+  process   Process original files downloaded using the upload command.
+  upload    Pushes processed files back to s3
+```
