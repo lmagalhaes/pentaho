@@ -4,7 +4,9 @@ from time import time
 
 from boto3 import Session
 
-from convert_file import ORIGINALS_PATH, PARSED_PATH, DATE_FORMAT, extract_file_name, get_months_to_import
+from convert_file import (
+    ORIGINALS_PATH, PARSED_PATH, DATE_FORMAT, extract_file_name, get_months_to_import
+)
 
 import glob
 
@@ -16,13 +18,6 @@ region_name = os.getenv('REGION_NAME')
 profile_name = os.getenv('AWS_PROFILE_NAME')
 sk_bucket_name = os.getenv('SK_BUCKET_NAME')
 sk_destination_bucket = '3ebdg67-dwh'
-
-session = Session(
-    # aws_secret_access_key=aws_secret_access_key,
-    # aws_access_key_id=aws_access_key_id,
-    profile_name=profile_name,
-    region_name=region_name
-)
 
 
 def download_file(item, destination_folder, s3_client):
@@ -50,14 +45,30 @@ def upload_file(file_path, s3_client):
     print(f'{key} uploaded successfully')
 
 
-@click.group(name='s3')
-def s3_manager():
-    pass
+@click.group(name='s3-cli')
+@click.option('--region', '-r', required=True, type=str, help='AWS region')
+@click.pass_context
+def s3_cli(ctx, region):
+    """ Enables SK files to be pulled from and pushed to S3 buckets """
+    session = Session(
+        # aws_secret_access_key=aws_secret_access_key,
+        # aws_access_key_id=aws_access_key_id,
+        profile_name=profile_name,
+        region_name=region
+    )
+    client = session.client('s3')
+
+    ctx.ensure_object(dict)
+    ctx.obj['s3_client'] = client
 
 
-@click.command(name='upload')
+@s3_cli.command(name='upload')
 @click.option('--dates', default='all', type=str, help='Date to migrate in the "YYYYMM" format. Multiple date separated by "," or range of dates separated by "-"')
-def push_to_s3(dates):
+@click.pass_context
+def push_to_s3(ctx, dates):
+    """ Pushes processed files back to s3"""
+
+    client = ctx.obj['s3_client']
     click.echo("Entering upload to s3")
     months_to_import = get_months_to_import(dates, DATE_FORMAT)
 
@@ -75,11 +86,18 @@ def push_to_s3(dates):
     print(f'Uploaded finished in {t2-t1:.2f}s')
 
 
-@click.command(name='download')
+@s3_cli.command(name='download')
 @click.option('--dates', default='all', type=str, help='Date to migrate in the "YYYYMM" format. Multiple date separated by "," or range of dates separated by "-"')
-def download_from_s3(dates: str):
+@click.pass_context
+def download_from_s3(ctx, dates: str):
+    """
+    Downloads the original files to be processed.
+    Allows you to pass a multiple dates or a range of dates through the '--dates' attibute.
+    """
     click.echo("Entering download from s3")
     click.echo(f'Downloading "{dates}" files')
+
+    client = ctx.obj['s3_client']
 
     months_to_import = get_months_to_import(dates, DATE_FORMAT)
     total_files = 0
@@ -112,10 +130,5 @@ def download_from_s3(dates: str):
 
 
 if __name__ == '__main__':
-    client = session.client('s3')
-
-    s3_manager.add_command(push_to_s3)
-    s3_manager.add_command(download_from_s3)
-
-    s3_manager()
+    s3_cli()
 
